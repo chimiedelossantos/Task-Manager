@@ -54,24 +54,43 @@ function createBoardElement(boardName, boardColor) {
 function createCardElement(cardText) {
     const card = document.createElement('div');
     card.className = 'card';
-    
-    const cardContent = document.createElement('textarea');
-    cardContent.value = cardText;
+
+    const cardContent = document.createElement('span'); // Use a <span> for displaying card text
+    cardContent.textContent = cardText;
     card.appendChild(cardContent);
-    
+
     card.setAttribute('draggable', true);
     
     card.addEventListener('dragstart', function(event) {
-        draggedCard = event.target;
-        sourceBoard = draggedCard.parentElement;
-        event.dataTransfer.setData('text/plain', cardText);
+        const target = event.target;
+    if (target.classList.contains('card')) {
+        draggedCard = target;
+        sourceBoard = target.closest('.board');
+        event.dataTransfer.setData('text/plain', target.textContent);
         event.dataTransfer.effectAllowed = 'move';
-    });
+    }
+});
     
     card.addEventListener('click', function() {
-        openModal(cardText, card);
+        const cardInput = document.createElement('input');
+        cardInput.type = 'text';
+        cardInput.value = cardText;
+
+        cardInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                cardContent.textContent = cardInput.value;
+                cardText = cardInput.value; // Update the cardText variable
+            }
+        });
+
+        cardInput.addEventListener('blur', function() {
+            cardContent.textContent = cardText; // Revert the changes if focus is lost without pressing Enter
+        });
+
+        cardContent.replaceWith(cardInput);
+        cardInput.focus();
     });
-    
+
     return card;
 }
 
@@ -158,12 +177,15 @@ document.addEventListener('drop', function(event) {
     event.preventDefault();
     const cardText = event.dataTransfer.getData('text/plain');
     const targetCard = event.target.closest('.card');
+    const targetBoard = event.target.closest('.board');
+
     if (targetCard) {
-        const targetBoard = targetCard.parentElement;
-        if (targetBoard !== sourceBoard) {
+        if (targetCard !== draggedCard) {
             const newCard = createCardElement(cardText);
             targetBoard.insertBefore(newCard, targetCard);
             sourceBoard.removeChild(draggedCard);
         }
+    } else if (targetBoard) {
+        targetBoard.appendChild(draggedCard); // Append the dragged card to the target board
     }
 });
