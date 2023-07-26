@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trello-like App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="board-container">
+        <button id="add-board-btn">Add New Board</button>
+        <div class="boards-container" id="boards">
+            <!-- Existing boards go here -->
+        </div>
+    </div>
+    
+    <div id="modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modal-card-content"></div>
+            <div class="comments">
+                <button id="add-comment-btn" onclick="toggleCommentInput()">Add Comment</button>
+                <div id="comment-input-section" style="display: none;">
+                    <textarea id="modal-comment-input" placeholder="Add a comment..."></textarea>
+                    <button onclick="addModalComment()">Save Comment</button>
+                </div>
+                <div id="modal-comments-section"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
