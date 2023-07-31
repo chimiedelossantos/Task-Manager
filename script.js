@@ -157,15 +157,31 @@ function toggleCommentInput() {
     commentInputSection.style.display = isVisible ? 'none' : 'block';
 }
 
+
 function addBoard() {
     const boardName = prompt('Enter board name:');
     const boardColor = prompt('Enter board color (e.g., red, #00ff00, rgb(0, 0, 255)):');
-
+  
     if (boardName && boardColor) {
-        const board = createBoardElement(boardName, boardColor);
+      const boardData = { name: boardName, color: boardColor };
+      
+      // Make a POST request to the server to save the new board
+      fetch('/api/boards', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(boardData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        // After saving the board, add it to the UI
+        const board = createBoardElement(data.name, data.color);
         boardsContainer.appendChild(board);
+      })
+      .catch(error => console.error('Error saving board:', error));
     }
-}
+  }
 
 addBoardBtn.addEventListener('click', addBoard);
 
